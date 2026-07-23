@@ -1,0 +1,73 @@
+# Starter Docker Compose environment for Sports Store.
+#
+# Complete this file so `docker compose up --build` starts the entire
+# application — MongoDB, all 5 backend services, and the NGINX gateway —
+# with a single command. See README.md for the full requirements
+# (networking, persistence, health checks, etc).
+
+services:
+  # ---------------------------------------------------------------------
+  # MongoDB
+  # ---------------------------------------------------------------------
+  # TODO: add a `mongo` service.
+  #   - image: mongo:7
+  #   - set MONGO_INITDB_ROOT_USERNAME / MONGO_INITDB_ROOT_PASSWORD via
+  #     environment variables — read from a .env file, do not hardcode
+  #     secrets in this file.
+  #   - mount a named volume at /data/db for persistent storage.
+  #   - mount ./seed/init-mongo.js read-only into
+  #     /docker-entrypoint-initdb.d/init-mongo.js so it seeds the database
+  #     on first init only.
+  #     hint: https://docs.docker.com/guides/pre-seeding/
+  #   - do NOT publish MongoDB's port to the host — only containers on
+  #     the compose network should be able to reach it.
+  #   - attach it to the shared network (see `networks:` below).
+  #   - consider a healthcheck (e.g. `mongosh --eval "db.adminCommand('ping')"`)
+  #     so dependent services can wait for it to actually be ready.
+
+  # ---------------------------------------------------------------------
+  # Backend microservices
+  # ---------------------------------------------------------------------
+  # TODO: add one service block per backend below, each built from its
+  # ./services/<name> directory. None of these should publish ports to
+  # the host — only the gateway is externally reachable. Every service
+  # needs MONGO_URI and JWT_SECRET; some also call other services over
+  # HTTP using the compose service name as the hostname (never
+  # `localhost` — containers don't share a network namespace).
+  #
+  #   auth     ./services/auth-service      needs: MONGO_URI, JWT_SECRET
+  #   catalog  ./services/catalog-service    needs: MONGO_URI, JWT_SECRET
+  #   cart     ./services/cart-service       needs: MONGO_URI, JWT_SECRET,
+  #                                                  CATALOG_URL
+  #   order    ./services/order-service      needs: MONGO_URI, JWT_SECRET,
+  #                                                  CART_URL, CATALOG_URL,
+  #                                                  PAYMENT_URL,
+  #                                                  SHIPPING_FLAT_RATE,
+  #                                                  FREE_SHIPPING_THRESHOLD
+  #   payment  ./services/payment-service    needs: MONGO_URI, JWT_SECRET,
+  #                                                  PAYMENT_FAILURE_SUFFIX
+  #
+  #   Each service's ./services/<name>/.env.example lists its exact
+  #   variables (with localhost-based defaults meant for running the
+  #   service outside Docker — replace `localhost` with the relevant
+  #   compose service name here).
+  #
+  #   Each service should wait for MongoDB to be healthy before starting
+  #   (hint: `depends_on:` + `condition: service_healthy`), and should
+  #   expose its own healthcheck so services that depend on IT can do
+  #   the same.
+
+  # ---------------------------------------------------------------------
+  # NGINX gateway
+  # ---------------------------------------------------------------------
+  # TODO: add a `gateway` service.
+  #   - build from the project root (context: .) using gateway/Dockerfile
+  #     — the build needs access to both frontend/ and gateway/.
+  #   - this is the ONLY service that publishes a port to the host.
+  #   - it should start after the 5 backend services.
+
+networks:
+  # TODO: define the shared bridge network every service above attaches to.
+
+volumes:
+  # TODO: define the named volume used for MongoDB's persistent data.
