@@ -31,6 +31,20 @@ services:
       start_period: 10s
 
   # ---------------------------------------------------------------------
+  # Redis (Standalone Cache fallback for local development)
+  # ---------------------------------------------------------------------
+  redis:
+    image: redis:7.2-alpine
+    networks:
+      - sports-store-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+
+  # ---------------------------------------------------------------------
   # Backend microservices
   # ---------------------------------------------------------------------
   auth:
@@ -38,8 +52,12 @@ services:
     environment:
       MONGO_URI: mongodb://root:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       mongo:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - sports-store-net
@@ -73,10 +91,14 @@ services:
       MONGO_URI: mongodb://root:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin
       JWT_SECRET: ${JWT_SECRET}
       CATALOG_URL: http://catalog:8002
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       mongo:
         condition: service_healthy
       catalog:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - sports-store-net
