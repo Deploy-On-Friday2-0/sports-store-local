@@ -18,3 +18,7 @@ docker compose up --build -d
 ```
 
 Only the gateway should publish a host port.
+
+## PR Diff Review Runner
+
+The provider-independent pipeline and trusted post-CI GitHub Actions integration are documented in [`review_runner/README.md`](review_runner/README.md). Local use accepts a supplied unified patch and uses the mock provider. In GitHub, the trusted workflow retrieves Pull Request diffs as data and invokes OpenRouter only after branch-name, Compose configuration, and secret-scanning checks succeed.
